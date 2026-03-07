@@ -2,6 +2,10 @@
 
 MCP server that bridges LCOV coverage reports to AI agents. Gives agents precise, structured visibility into test coverage — which lines are hit, which branches are missed, and where to focus testing efforts.
 
+## What is LCOV?
+
+LCOV is a standard text format for code coverage data. It records which lines, functions, and branches were executed during tests. The format is widely supported by test runners (Vitest, Jest, Istanbul, etc.) and is typically written to `lcov.info`. Each record describes coverage for a source file: line hits, branch hits, and function hits.
+
 ## Tools
 
 | Tool | Description |
@@ -76,6 +80,99 @@ pnpm test:coverage
 2. The LCOV file is parsed in-memory into a `Map<filename, FileCoverage>` and cached.
 3. Subsequent tool calls reuse the cache (identified by `lcov_path` + `project_root`) or trigger a reload via `refresh_coverage`.
 4. File paths in LCOV records are resolved against `project_root` with fallback heuristics (absolute, relative, common segment stripping).
+
+## Generating LCOV reports
+
+The MCP server reads `lcov.info` files. Here’s how to generate them with common test runners:
+
+### Vitest
+
+Install the coverage provider:
+
+```bash
+pnpm add -D @vitest/coverage-v8
+```
+
+Configure `vitest.config.ts`:
+
+```ts
+import { defineConfig } from 'vitest/config'
+
+export default defineConfig({
+  test: {
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'lcov'],
+      reportsDirectory: './coverage',
+    },
+  },
+})
+```
+
+Run tests with coverage:
+
+```bash
+pnpm vitest run --coverage
+```
+
+Output: `./coverage/lcov.info`
+
+### Jest
+
+Install Istanbul (used by Jest for coverage):
+
+```bash
+pnpm add -D jest @types/jest
+```
+
+Configure `jest.config.js` or `package.json`:
+
+```json
+{
+  "jest": {
+    "collectCoverage": true,
+    "coverageReporters": ["text", "lcov"],
+    "coverageDirectory": "coverage"
+  }
+}
+```
+
+Run tests with coverage:
+
+```bash
+pnpm jest --coverage
+```
+
+Output: `./coverage/lcov.info`
+
+### Istanbul / nyc
+
+```bash
+pnpm add -D nyc
+```
+
+Configure `package.json`:
+
+```json
+{
+  "nyc": {
+    "reporter": ["text", "lcov"],
+    "report-dir": "coverage"
+  }
+}
+```
+
+Run tests with coverage:
+
+```bash
+pnpm nyc pnpm test
+```
+
+Output: `./coverage/lcov.info` (or `.nyc_output/lcov.info` depending on config)
+
+### Other runners
+
+Most runners support LCOV via plugins or built-in options. Ensure the reporter outputs `lcov` and that the path to `lcov.info` is passed as `lcov_path` to the MCP tools.
 
 ## Inputs
 
