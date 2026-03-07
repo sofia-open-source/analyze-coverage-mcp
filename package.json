@@ -1,5 +1,5 @@
 {
-  "name": "analyze-coverage-mcp",
+  "name": "@sofia-open-source/analyze-coverage-mcp",
   "version": "1.0.0",
   "description": "MCP Server that bridges LCOV coverage reports to AI agents",
   "license": "MIT",
