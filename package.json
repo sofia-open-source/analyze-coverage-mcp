@@ -2,6 +2,7 @@
   "name": "analyze-coverage-mcp",
   "version": "1.0.0",
   "description": "MCP Server that bridges LCOV coverage reports to AI agents",
+  "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

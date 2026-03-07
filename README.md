@@ -187,3 +187,7 @@ Typical `lcov_path` values:
 - Vitest with `@vitest/coverage-v8`: `<project>/coverage/lcov.info`
 - Jest with `--coverage`: `<project>/coverage/lcov.info`
 - Istanbul/nyc: `<project>/.nyc_output/lcov.info`
+
+## License
+
+MIT
