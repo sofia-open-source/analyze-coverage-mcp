@@ -9,7 +9,6 @@ MCP server that bridges LCOV coverage reports to AI agents. Gives agents precise
 | `get_coverage_overview` | Aggregated and per-file coverage stats (lines, functions, branches %). Supports filtering by directory prefix, threshold, and sort order. |
 | `list_uncovered_regions` | Uncovered lines (merged into ranges) and uncovered branches for a specific file. |
 | `get_annotated_source` | Full source file annotated line-by-line with `[COVERED]`, `[NOT COV]`, or `[NO DATA]`. Supports `start_line`/`end_line` windowing. |
-| `refresh_coverage` | Forces a reload of `lcov.info` from disk. Call after re-running the test suite. |
 
 The server also watches `lcov.info` for changes (polling every 1 s) and auto-reloads — so coverage stays current while tests run in watch mode.
 
