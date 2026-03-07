@@ -1,6 +1,11 @@
 # analyze-coverage-mcp
 
-MCP server that bridges LCOV coverage reports to AI agents. Gives agents precise, structured visibility into test coverage — which lines are hit, which branches are missed, and where to focus testing efforts.
+[![MCP Server](https://badge.mcpx.dev?type=server)](https://modelcontextprotocol.com)
+[![NPM Version](https://img.shields.io/npm/v/@sofia-open-source/analyze-coverage-mcp.svg)](https://www.npmjs.com/package/@sofia-open-source/analyze-coverage-mcp)
+[![codecov](https://codecov.io/gh/sofia-open-source/analyze-coverage-mcp/graph/badge.svg?token=L1W2GXUCB6)](https://codecov.io/gh/sofia-open-source/analyze-coverage-mcp)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+MCP server that bridges LCOV coverage reports to AI agents. It runs locally and gives agents precise, structured visibility into test coverage — which lines are hit, which branches are missed, and where to focus testing efforts.
 
 ## What is LCOV?
 
@@ -27,7 +32,10 @@ The server also watches `lcov.info` for changes (polling every 1 s) and auto-rel
   "mcpServers": {
     "analyze-coverage": {
       "command": "npx",
-      "args": ["@sofia-open-source/analyze-coverage-mcp"]
+      "args": [
+        "-y",
+        "@sofia-open-source/analyze-coverage-mcp"
+      ]
     }
   }
 }
