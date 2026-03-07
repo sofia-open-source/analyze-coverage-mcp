@@ -5,12 +5,11 @@
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
-    "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "provision": "esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=$HOME/.local/bin/analyze-coverage-mcp && sed -i '' '1s|^|#!/usr/bin/env node\\n|' $HOME/.local/bin/analyze-coverage-mcp && chmod +x $HOME/.local/bin/analyze-coverage-mcp && echo '[ok] analyze-coverage-mcp installed to ~/.local/bin'"
+    "build": "esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=./analyze-coverage-mcp && sed -i '' '1s|^|#!/usr/bin/env node\\n|' ./analyze-coverage-mcp && echo '[ok] analyze-coverage-mcp built'"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",

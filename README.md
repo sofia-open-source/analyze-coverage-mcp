@@ -15,33 +15,42 @@ The server also watches `lcov.info` for changes (polling every 1 s) and auto-rel
 
 ## Installation
 
-```bash
-# From the monorepo root
-pnpm provision
+### From npm
 
-# Or directly from this package
-pnpm run provision
-```
-
-This bundles `src/index.ts` into a single Node.js executable and installs it to `~/.local/bin/analyze-coverage-mcp`.
-
-Make sure `~/.local/bin` is on your `PATH`:
-
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-## MCP config
-
-The server is pre-configured in `apps/common/mcp.json`:
+#### Configure MCP
 
 ```json
-"analyze-coverage": {
-  "command": "analyze-coverage-mcp"
+{
+  "mcpServers": {
+    "analyze-coverage": {
+      "command": "npx",
+      "args": ["@sofia-open-source/analyze-coverage-mcp"]
+    }
+  }
 }
 ```
 
-Running `pnpm provision` from the repo root installs the binary and runs `apps/common/provision.sh`, which symlinks the MCP config to all supported agent tools.
+### From source
+
+#### Build and install
+
+```bash
+pnpm build # generates js bundle in ./analyze-coverage-mcp with shebang node executable
+chmod +x ./analyze-coverage-mcp # make it executable
+cp ./analyze-coverage-mcp ~/.local/bin/analyze-coverage-mcp # available in $PATH
+```
+
+#### Configure MCP
+
+```json
+{
+  "mcpServers": {
+    "analyze-coverage": {
+      "command": "analyze-coverage-mcp"
+    }
+  }
+}
+```
 
 ## Development
 
