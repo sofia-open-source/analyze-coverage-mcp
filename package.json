@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "build": "esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=./analyze-coverage-mcp && sed -i '' '1s|^|#!/usr/bin/env node\\n|' ./analyze-coverage-mcp && echo '[ok] analyze-coverage-mcp built'"
+    "build": "tsc",
+    "bundle": "esbuild src/index.ts --bundle --platform=node --format=cjs --outfile=./analyze-coverage-mcp && sed -i '' '1s|^|#!/usr/bin/env node\\n|' ./analyze-coverage-mcp && echo '[ok] analyze-coverage-mcp built'"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1",

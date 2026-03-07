@@ -38,7 +38,7 @@ The server also watches `lcov.info` for changes (polling every 1 s) and auto-rel
 #### Build and install
 
 ```bash
-pnpm build # generates js bundle in ./analyze-coverage-mcp with shebang node executable
+pnpm bundle # generates js bundle in ./analyze-coverage-mcp with shebang node executable
 chmod +x ./analyze-coverage-mcp # make it executable
 cp ./analyze-coverage-mcp ~/.local/bin/analyze-coverage-mcp # available in $PATH
 ```
