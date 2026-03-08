@@ -1,12 +1,10 @@
 {
   "name": "@sofia-open-source/analyze-coverage-mcp",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "MCP Server that bridges LCOV coverage reports to AI agents",
   "license": "MIT",
   "main": "dist/index.js",
-  "bin": {
-    "analyze-coverage-mcp": "./bin/analyze-coverage-mcp.js"
-  },
+  "bin": "./bin/analyze-coverage-mcp.js",
   "files": [
     "bin",
     "dist"

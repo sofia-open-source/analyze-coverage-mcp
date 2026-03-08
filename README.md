@@ -21,6 +21,29 @@ LCOV is a standard text format for code coverage data. It records which lines, f
 
 The server also watches `lcov.info` for changes (polling every 1 s) and auto-reloads — so coverage stays current while tests run in watch mode.
 
+## Requirements
+
+| Parameter | Requirement |
+|-----------|-------------|
+| `lcov_path` | Must be an **absolute** path. The file must exist on disk. |
+| `project_root` | Must be an **absolute** path to the directory containing your source files. |
+
+### Expected project structure
+
+For the automatic path resolution to work, your project must follow this layout:
+
+```
+<package_root>/          ← directory where tests run (e.g. apps/app-api)
+├── coverage/
+│   └── lcov.info
+└── src/
+    └── ...
+```
+
+**`src/` and `coverage/` must be siblings** under the same package root. This is the default layout when Vitest or Jest outputs coverage to `./coverage/`.
+
+If your structure differs, use `source_root` or `additional_roots` (see [Path resolution and file locations](#path-resolution-and-file-locations)).
+
 ## Installation
 
 ### From npm
@@ -198,12 +221,7 @@ Typical `lcov_path` values:
 
 ## Path resolution and file locations
 
-### Requirements
-
-| Parameter | Requirement |
-|-----------|-------------|
-| `lcov_path` | Must be an **absolute** path. The file must exist on disk. |
-| `project_root` | Must be an **absolute** path to the directory containing your source files. |
+See [Requirements](#requirements) for parameter and structure requirements.
 
 ### How paths work in LCOV
 
