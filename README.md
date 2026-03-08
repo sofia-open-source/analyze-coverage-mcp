@@ -26,21 +26,21 @@ The server also watches `lcov.info` for changes (polling every 1 s) and auto-rel
 | Parameter | Requirement |
 |-----------|-------------|
 | `lcov_path` | Must be an **absolute** path. The file must exist on disk. |
-| `project_root` | Must be an **absolute** path to the directory containing your source files. |
+| `project_root` | Must be an **absolute** path. In single projects, use the directory where tests run (same as package root below). In monorepos, you can use the repo root — the MCP derives the package root from `lcov_path`. |
 
 ### Expected project structure
 
-For the automatic path resolution to work, your project must follow this layout:
+The directory where tests run (the **package root**) must have this layout:
 
 ```
-<package_root>/          ← directory where tests run (e.g. apps/app-api)
+<package_root>/          ← same as project_root in single projects; in monorepos, parent of coverage/ (e.g. apps/app-api)
 ├── coverage/
 │   └── lcov.info
 └── src/
     └── ...
 ```
 
-**`src/` and `coverage/` must be siblings** under the same package root. This is the default layout when Vitest or Jest outputs coverage to `./coverage/`.
+**`src/` and `coverage/` must be siblings** under the package root. In single projects, pass that directory as `project_root`. In monorepos, `project_root` can be the repo root; the MCP infers the package root from the `lcov_path` location.
 
 If your structure differs, use `source_root` or `additional_roots` (see [Path resolution and file locations](#path-resolution-and-file-locations)).
 
