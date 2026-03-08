@@ -23,6 +23,8 @@ The server also watches `lcov.info` for changes (polling every 1 s) and auto-rel
 
 ## Requirements
 
+All MCP tools (`get_coverage_overview`, `list_uncovered_regions`, `get_annotated_source`) require these parameters in every call. They identify which coverage report to load and how to resolve source file paths.
+
 | Parameter | Requirement |
 |-----------|-------------|
 | `lcov_path` | Must be an **absolute** path. The file must exist on disk. |
