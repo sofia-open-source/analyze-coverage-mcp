@@ -481,6 +481,20 @@ describe("resolveSourcePath", () => {
     );
     expect(result).toBe(resolve(__dirname, "lcov.info"));
   });
+
+  it("resolves via sourceRoot when provided", () => {
+    const result = resolveSourcePath("lcov.info", "/tmp", {
+      sourceRoot: __dirname,
+    });
+    expect(result).toBe(resolve(__dirname, "lcov.info"));
+  });
+
+  it("resolves via additionalRoots when provided", () => {
+    const result = resolveSourcePath("lcov.info", "/tmp", {
+      additionalRoots: [__dirname],
+    });
+    expect(result).toBe(resolve(__dirname, "lcov.info"));
+  });
 });
 
 // ---------------------------------------------------------------------------

@@ -234,19 +234,38 @@ export function getAnnotatedSource(
   });
 }
 
+export interface ResolveSourcePathOptions {
+  /** When provided, tried first (before projectRoot). Use for explicit package root in monorepos. */
+  sourceRoot?: string;
+  /** Additional roots to try. For each, resolve(root, sourceFile) is attempted. */
+  additionalRoots?: string[];
+  /** Pre-built full paths to try (e.g. from lcov location heuristic). */
+  candidates?: string[];
+}
+
 /**
  * Resolve a source file path from an LCOV record to a filesystem path.
- * Tries: as-is (absolute), relative to projectRoot, stripping common prefixes.
+ * Order: (1) as-is if absolute, (2) sourceRoot + path if provided, (3) projectRoot + path,
+ * (4) projectRoot + path from src/lib/dist/app, (5) additionalRoots, (6) candidates.
+ * See README "Path resolution and file locations".
  */
 export function resolveSourcePath(
   sourceFile: string,
   projectRoot: string,
-  candidates?: string[]
+  options?: ResolveSourcePathOptions | string[]
 ): string | null {
+  // Backward compat: options can be the legacy candidates array
+  const opts: ResolveSourcePathOptions =
+    Array.isArray(options) ? { candidates: options } : options ?? {};
+
   const toCheck: string[] = [];
 
   if (isAbsolute(sourceFile)) {
     toCheck.push(sourceFile);
+  }
+
+  if (opts.sourceRoot) {
+    toCheck.push(resolve(opts.sourceRoot, sourceFile));
   }
 
   toCheck.push(resolve(projectRoot, sourceFile));
@@ -259,7 +278,13 @@ export function resolveSourcePath(
     }
   }
 
-  if (candidates) toCheck.push(...candidates);
+  if (opts.additionalRoots) {
+    for (const root of opts.additionalRoots) {
+      toCheck.push(resolve(root, sourceFile));
+    }
+  }
+
+  if (opts.candidates) toCheck.push(...opts.candidates);
 
   for (const p of toCheck) {
     try {

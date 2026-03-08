@@ -87,7 +87,7 @@ pnpm test:coverage
 1. The agent calls `get_coverage_overview` with `lcov_path` and `project_root` to load the report.
 2. The LCOV file is parsed in-memory into a `Map<filename, FileCoverage>` and cached.
 3. Subsequent tool calls reuse the cache (identified by `lcov_path` + `project_root`) or trigger a reload via `refresh_coverage`.
-4. File paths in LCOV records are resolved against `project_root` with fallback heuristics (absolute, relative, common segment stripping).
+4. Source paths are resolved with fallbacks: `project_root` + path, common prefix stripping (`src/`, `lib/`, etc.), and when lcov is in `coverage/`, the parent directory is used for monorepos. See [Path resolution and file locations](#path-resolution-and-file-locations).
 
 ## Generating LCOV reports
 
@@ -195,6 +195,66 @@ Typical `lcov_path` values:
 - Vitest with `@vitest/coverage-v8`: `<project>/coverage/lcov.info`
 - Jest with `--coverage`: `<project>/coverage/lcov.info`
 - Istanbul/nyc: `<project>/.nyc_output/lcov.info`
+
+## Path resolution and file locations
+
+### Requirements
+
+| Parameter | Requirement |
+|-----------|-------------|
+| `lcov_path` | Must be an **absolute** path. The file must exist on disk. |
+| `project_root` | Must be an **absolute** path to the directory containing your source files. |
+
+### How paths work in LCOV
+
+LCOV records store source file paths **relative to the package that ran the tests**. For example, if tests run from `apps/app-api`, paths look like `src/core/auth/service.ts`, not `apps/app-api/src/core/auth/service.ts`.
+
+### Monorepos
+
+In monorepos, `project_root` is often the repo root (e.g. `/repo`), but LCOV paths are relative to the package root (e.g. `apps/app-api`). The MCP handles this automatically:
+
+- When `lcov_path` is inside a `coverage/` directory (e.g. `apps/app-api/coverage/lcov.info`), the **parent of that directory** is used as a fallback source root.
+- So `project_root` can be the monorepo root; source files under `apps/app-api/src/` are still resolved correctly.
+
+**Example:** `lcov_path: /repo/apps/app-api/coverage/lcov.info` with `project_root: /repo` → sources resolve under `/repo/apps/app-api/`.
+
+### Source path resolution order
+
+For `get_annotated_source`, the MCP resolves LCOV paths to filesystem paths in this order:
+
+1. **Absolute path** — if the LCOV path is already absolute.
+2. **`source_root` + path** — when `source_root` is provided (optional param).
+3. **`project_root` + path** — e.g. `project_root/src/foo.ts`.
+4. **Stripped prefixes** — if the path contains `src/`, `lib/`, `dist/`, or `app/`, tries `project_root` + the path from that segment onward.
+5. **`additional_roots`** — for each root in this optional array, tries `root + path`.
+6. **Derived from lcov location** — when lcov is in `coverage/`, tries the parent directory of `coverage/` as root.
+
+### Flexible overrides (`get_annotated_source`)
+
+When the automatic heuristics fail, use these optional parameters:
+
+| Parameter | Description |
+|-----------|-------------|
+| `source_root` | Override root for resolving source files. Tried **before** `project_root`. Use when you know the package root (e.g. `apps/app-api`). |
+| `additional_roots` | Array of extra roots to try. For each, `resolve(root, file_path)` is attempted. Useful when sources live in multiple directories. |
+
+**Example:** `get_annotated_source` with `source_root: "/repo/apps/app-api"` forces resolution under that directory, ignoring `project_root` for that call.
+
+### `file_path` matching
+
+For `list_uncovered_regions` and `get_annotated_source`, `file_path` can be:
+
+- The **exact path** as it appears in the LCOV report (e.g. `src/core/auth/service.ts`).
+- A **suffix** that uniquely identifies the file (e.g. `auth/service.ts` or `service.ts`).
+- A **filename** if it is unique across the report (e.g. `service.ts`).
+
+Use `get_coverage_overview` to list available paths when unsure.
+
+### Restrictions and pitfalls
+
+- **Source file must exist on disk for `get_annotated_source`.** That tool reads the source to annotate it. If resolution fails: *"Source file not found on disk. Try setting project_root, source_root, or additional_roots to the directory containing your source files."* `list_uncovered_regions` only uses coverage data and does not require the source file.
+- **Use `source_root` or `additional_roots` when heuristics fail.** When the automatic monorepo detection fails, pass `source_root` with the package root (e.g. `apps/app-api`), or use `additional_roots` to add extra search paths.
+- **Paths are case-sensitive** on most systems.
 
 ## License
 
